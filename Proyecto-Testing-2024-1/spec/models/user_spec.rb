@@ -52,7 +52,7 @@ RSpec.describe User, type: :model do
         email: 'asdf@gmail.com',
         role: 'admin',
       )
-
+      expect(user).to be_valid
       product = Product.create!(
         nombre: 'Product1',
         precio: 10.0,
@@ -60,25 +60,40 @@ RSpec.describe User, type: :model do
         categories: 'Cancha',
         user: user
       )
-      user.deseados << product.nombre
+      user.deseados << product.id
+      user.save
       expect(user).to be_valid
-    
+
       user.deseados << 9999 # assuming 9999 is a non-existent product id
       user.save
       expect(user).to_not be_valid
       expect(user.errors[:deseados]).to include('el articulo que se quiere ingresar a la lista de deseados no es valido')
+          
     end
   
     it "destroys dependent products, reviews, messages, and solicitudes" do
       user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
-      product = user.products.create!(name: 'Product1', price: 10.0, stock: 5)
-      review = user.reviews.create!(content: 'Great product', product: product)
-      message = user.messages.create!(content: 'Is this available?', product: product)
-      solicitud = user.solicituds.create!(product: product, status: 'pending')
+      product = user.products.create!(nombre: 'Product1', precio: 10.0, stock: 5, categories: 'Cancha',)
+      review = user.reviews.create!(tittle: 'Great product', description: 'I really enjoyed this product', calification: 5, product: product)
+      message = user.messages.create!(body: 'Is this available?', product: product)
+      solicitud = user.solicituds.create!(stock: 10, status: 'pending', product: product)
   
       expect { user.destroy }.to change { Product.count }.by(-1)
         .and change { Review.count }.by(-1)
         .and change { Message.count }.by(-1)
         .and change { Solicitud.count }.by(-1)
     end
+
+    describe "Methods" do
+  
+      it "has a valid password_required? method" do
+        # Test cases for password_required? method
+      end
+  
+      it "has a valid validate_password_strength method" do
+        # Test cases for validate_password_strength method
+      end
+    end
   end
+
+  
