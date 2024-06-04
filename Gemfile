@@ -74,8 +74,8 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner-active_record'
   gem 'selenium-webdriver'
-  gem 'webdrivers'
   gem 'factory_bot_rails'
+  gem 'webdrivers'
 end
 
 gem 'rubocop', require: false
