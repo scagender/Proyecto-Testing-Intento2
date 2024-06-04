@@ -60,17 +60,14 @@ jobs:
         run: bundle exec rails test
         working-directory: Proyecto-Testing-2024-1
 
-      - name: Wait before running tests
-        run: sleep 5
-
-      - name: Configure Selenium for Chrome
+      - name: Configure Selenium for Chrome headless
         run: |
-          echo "Capybara.register_driver :selenium_chrome do |app|" >> spec/rails_helper.rb
-          echo "  Capybara::Selenium::Driver.new(app, browser: :chrome)" >> spec/rails_helper.rb
+          echo "Capybara.register_driver :selenium_chrome_headless do |app|" >> spec/rails_helper.rb
+          echo "  Capybara::Selenium::Driver.new(app, browser: :chrome, options: Selenium::WebDriver::Chrome::Options.new(args: ['--headless', '--disable-gpu']))" >> spec/rails_helper.rb
           echo "end" >> spec/rails_helper.rb
           echo "" >> spec/rails_helper.rb
-          echo "Capybara.default_driver = :selenium_chrome" >> spec/rails_helper.rb
-          echo "Capybara.javascript_driver = :selenium_chrome" >> spec/rails_helper.rb
+          echo "Capybara.default_driver = :selenium_chrome_headless" >> spec/rails_helper.rb
+          echo "Capybara.javascript_driver = :selenium_chrome_headless" >> spec/rails_helper.rb
         working-directory: Proyecto-Testing-2024-1
 
       - name: Run rspec tests
