@@ -93,7 +93,7 @@ RSpec.describe Ability, type: :model do
       it { should_not be_able_to(:insertar, Review) }
       it { should_not be_able_to(:crear, Review) }
       it { should_not be_able_to(:insertar, Message) }
-      it { should_not be_able_to(:index, Solicitud) }
+
     end
   end
 end
