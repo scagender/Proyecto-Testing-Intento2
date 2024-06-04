@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          path: Proyecto-Testing-2024-1
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -41,30 +43,36 @@ jobs:
         run: |
           gem install bundler
           bundle install
+        working-directory: ./Proyecto-Testing-2024-1
 
       - name: Set up database
         run: |
           bundle exec rails db:create
           bundle exec rails db:schema:load
+        working-directory: ./Proyecto-Testing-2024-1
 
       - name: Run MiniTest tests
         run: bundle exec rails test
+        working-directory: ./Proyecto-Testing-2024-1
 
       - name: Run rspec tests
         if: success() || failure()
         run: bundle exec rspec
+        working-directory: ./Proyecto-Testing-2024-1
 
       - name: Store coverage
         uses: actions/upload-artifact@v3
         with:
           name: coverage_report
-          path: coverage/
+          path: Proyecto-Testing-2024-1/coverage/
 
   rubocop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          path: Proyecto-Testing-2024-1
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -76,6 +84,9 @@ jobs:
         run: |
           gem install bundler
           bundle install
+        working-directory: ./Proyecto-Testing-2024-1
 
       - name: Run Rubocop
         run: bundle exec rubocop --parallel
+        working-directory: ./Proyecto-Testing-2024-1
+
