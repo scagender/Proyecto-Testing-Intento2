@@ -27,17 +27,6 @@ jobs:
         with:
           path: Proyecto-Testing-2024-1
 
-      - name: Install Chrome and ChromeDriver
-        run: |
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb
-          sudo apt-get install -f
-          wget https://chromedriver.storage.googleapis.com/<<VERSION>>/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/chromedriver
-          sudo chmod +x /usr/local/bin/chromedriver
-        working-directory: Proyecto-Testing-2024-1
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
