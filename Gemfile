@@ -73,7 +73,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem 'capybara', ">= 3.26"
   gem 'database_cleaner-active_record'
-  gem 'selenium-webdriver', ">= 4.0.0"
+  gem 'selenium-webdriver', ">= 4.1.1"
   gem 'factory_bot_rails'
   gem 'webdrivers'
 end
