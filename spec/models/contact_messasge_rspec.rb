@@ -4,11 +4,11 @@ require 'rails_helper'
 RSpec.describe ContactMessage, type: :model do
   before(:each) do
     @contact_message = ContactMessage.new(
-      title: 'Consulta',
-      body: 'Me gustaría saber más sobre sus productos.',
-      name: 'Juan Pérez',
-      mail: 'juan.perez@example.com',
-      phone: '+56912345678'
+      title: 'Prueba',
+      body: 'Muy buenos productos ofreces, tienes ig?.',
+      name: 'Juan Pablo',
+      mail: 'juanpablo@example.com',
+      phone: '+56978767654'
     )
   end
 
@@ -79,6 +79,11 @@ RSpec.describe ContactMessage, type: :model do
 
     it 'is valid with a correctly formatted phone' do
       @contact_message.phone = '+56912345678'
+      expect(@contact_message).to be_valid
+    end
+
+    it 'is valid with a black phone' do
+      @contact_message.phone = ''
       expect(@contact_message).to be_valid
     end
   end
