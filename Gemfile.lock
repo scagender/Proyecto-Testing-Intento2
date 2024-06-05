@@ -356,7 +356,7 @@ DEPENDENCIES
   bootsnap
   bootstrap (~> 4.4.1)
   cancancan
-  capybara
+  capybara (>= 3.26)
   cloudinary
   cypress-on-rails (~> 1.0)
   database_cleaner-active_record
@@ -375,7 +375,7 @@ DEPENDENCIES
   rspec-rails (~> 6.0.0)
   rubocop
   rubocop-rails
-  selenium-webdriver
+  selenium-webdriver (>= 4.1.1)
   simplecov
   sprockets-rails
   stimulus-rails
