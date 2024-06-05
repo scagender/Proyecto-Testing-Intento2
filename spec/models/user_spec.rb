@@ -85,13 +85,17 @@ RSpec.describe User, type: :model do
     end
 
     describe "Methods" do
-  
       it "has a valid password_required? method" do
+        user = User.new(name: 'John1', email: 'asdf@gmail.com', role: 'admin')
         # Test cases for password_required? method
+        expect(user.password_required?).to be true # or false based on your implementation
       end
-  
+    
       it "has a valid validate_password_strength method" do
-        # Test cases for validate_password_strength method
+        user = User.new(name: 'John1', email: 'asdf@gmail.com', role: 'admin')
+        user.password = 'WeakPassword123'
+        user.validate_password_strength
+        expect(user.errors[:password]).to include('no es válido incluir como minimo una mayuscula, minuscula y un simbolo')
       end
     end
   end
