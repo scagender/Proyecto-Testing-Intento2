@@ -119,7 +119,6 @@ class ShoppingCartController < ApplicationController
       redirect_to '/carro'
     else
       # Crear solicitud pre-aprobada por cada item en el carro
-      # Comprueba primero si todas las solicitudes son válidas
       return redirect_to '/carro' unless comprobar_productos(@shopping_cart)
 
       # Crear solicitudes y realizar compras
