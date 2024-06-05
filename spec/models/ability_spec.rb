@@ -39,8 +39,8 @@ RSpec.describe Ability, type: :model do
 
       context 'when solicitud belongs to user' do
         let(:user) { User.new(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com') }
-        let(:product) { Product.new(user) }
-        let(:solicitud) { Solicitud.new(user, product) }
+        let(:product) { Product.new(user: user) }
+        let(:solicitud) { Solicitud.new(user: user, product: product) }
 
         # it { should be_able_to(:eliminar, solicitud) }
         it { should be_able_to(:leer, solicitud) }
@@ -49,13 +49,13 @@ RSpec.describe Ability, type: :model do
 
       context 'when solicituds product belongs to user' do
         let(:solicitud) { Solicitud.new }
-        let(:product) { Product.new(user) }
+        let(:product) { Product.new(user: user) }
         before { solicitud.product = product }
         # it { should be_able_to(:eliminar, solicitud) } it { should be_able_to(:actualizar, solicitud) }
       end
 
       context 'when review belongs to user' do
-        let(:review) { Review.new(user) }
+        let(:review) { Review.new(user: user) }
 
         it { should be_able_to(:eliminar, review) }
         it { should be_able_to(:actualizar_review, review) }
@@ -63,7 +63,7 @@ RSpec.describe Ability, type: :model do
       end
 
       context 'when message belongs to user' do
-        let(:message) { Message.new(user) }
+        let(:message) { Message.new(user: user) }
 
         it { should be_able_to(:eliminar, message) }
       end
