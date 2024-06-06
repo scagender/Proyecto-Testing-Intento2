@@ -27,8 +27,13 @@ RSpec.describe Solicitud, type: :model do
       expect(@solicitud).to_not be_valid
     end
 
-    it 'is not valid with a stock less than or equal to 0' do
+    it 'is not valid with a stock equal to 0' do
       @solicitud.stock = 0
+      expect(@solicitud).to_not be_valid
+    end
+
+    it 'is not valid with a stock less than 0' do
+      @solicitud.stock = -1
       expect(@solicitud).to_not be_valid
     end
 

@@ -23,6 +23,11 @@ RSpec.describe ShoppingCart, type: :model do
       expect(@shopping_cart).to be_valid
     end
 
+    it 'is valid with nul products' do
+      @shopping_cart.products = nil
+      expect(@shopping_cart).to be_valid
+    end
+
     it 'is valid with valid products' do
       expect(@shopping_cart.products).to include(@product1.id.to_s => 2, @product2.id.to_s => 3)
     end
@@ -43,6 +48,16 @@ RSpec.describe ShoppingCart, type: :model do
         @shopping_cart.products = { 9999 => 2 }
         expect(@shopping_cart.precio_total).to eq(0)
       end
+
+      it 'does not include prices of nil products' do
+        @shopping_cart.products = { nil => 2 }
+        expect(@shopping_cart.precio_total).to eq(0)
+      end
+
+      it 'does not include prices of empty products' do
+        @shopping_cart.products = { }
+        expect(@shopping_cart.precio_total).to eq(0)
+      end
     end
 
     describe "#costo_envio" do
@@ -57,6 +72,16 @@ RSpec.describe ShoppingCart, type: :model do
 
       it 'does not include shipping costs of non-existent products' do
         @shopping_cart.products = { 9999 => 2 }
+        expect(@shopping_cart.costo_envio).to eq(1000)
+      end
+
+      it 'does not include shipping costs of nil products' do
+        @shopping_cart.products = { nil => 2}
+        expect(@shopping_cart.costo_envio).to eq(1000)
+      end
+
+      it 'does not include shipping costs of empty products' do
+        @shopping_cart.products = { }
         expect(@shopping_cart.costo_envio).to eq(1000)
       end
     end

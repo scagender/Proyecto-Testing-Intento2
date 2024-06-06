@@ -86,5 +86,10 @@ RSpec.describe ContactMessage, type: :model do
       @contact_message.phone = ''
       expect(@contact_message).to be_valid
     end
+
+    it 'is valid with a null phone' do
+      @contact_message.phone = nil
+      expect(@contact_message).to be_valid
+    end
   end
 end
