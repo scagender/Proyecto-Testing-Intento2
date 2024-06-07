@@ -1,0 +1,15 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - echo "Building the application"
+    - mvn clean package
+
+test:
+  stage: test
+  script:
+    - echo "Running tests"
+    - mvn test
