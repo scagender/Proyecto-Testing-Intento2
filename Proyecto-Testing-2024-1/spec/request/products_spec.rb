@@ -4,32 +4,90 @@ RSpec.describe 'Products', type: :request do
   before do
     @admin = User.create!(name: 'Usuario Admin', password: 'Ejemplo123!', email: 'admin5@gmail.com', role: 'admin')
     @user = User.create!(name: 'Usuario Regular', password: 'Ejemplo123!', email: 'user3@gmail.com', role: 'user')
-    @user2 = User.new(name: 'Usuario Regular 2', password: 'Ejemplo123!', email: 'user9@gmail.com', role: 'user')
     sign_in @admin
     @product = Product.create!(nombre: 'Producto 1', precio: 4000, stock: 1, user_id: @admin.id, categories: 'Cancha')
   end
 
-  # GOD  
   describe 'GET /products/index' do
     it 'returns http success for authenticated user' do
       get '/products/index'
       expect(response).to have_http_status(:success)
     end
 
-    # GOD
     it 'returns http success for unauthenticated user' do
       sign_out @admin
       get '/products/index'
       expect(response).to have_http_status(:success)
     end
+
+    it 'filters products by category and search term' do
+      get '/products/index', params: { category: 'Cancha', search: 'Producto' }
+      expect(assigns(:products)).to include(@product)
+    end
+
+    it 'filters products by category only' do
+      get '/products/index', params: { category: 'Cancha' }
+      expect(assigns(:products)).to include(@product)
+    end
+
+    it 'filters products by search term only' do
+      get '/products/index', params: { search: 'Producto' }
+      expect(assigns(:products)).to include(@product)
+    end
   end
 
+  describe 'GET /products/leer/:id' do
+    before do
+      @review = Review.create!(tittle: 'Great Product', description: 'This is a great product', calification: 5, user: @user, product: @product)
+      @message = Message.create!(body: 'Este es un mensaje de prueba', user: @admin, product: @product)
+      allow(JokeApiService).to receive(:fetch_joke).and_return('This is a joke')
+      get "/products/leer/#{@product.id}"
+    end
+
+    it 'assigns @joke' do
+      expect(assigns(:joke)).to eq('This is a joke')
+    end
+
+    it 'assigns @product' do
+      expect(assigns(:product)).to eq(@product)
+    end
+
+    it 'assigns @messages' do
+      expect(assigns(:messages)).to match_array([@message])
+    end
+
+    it 'assigns @reviews' do
+      expect(assigns(:reviews)).to match_array([@review])
+    end
+
+    it 'calculates @calification_mean' do
+      expect(assigns(:calification_mean)).to eq(5.0)
+    end
+
+    it 'handles nil calification' do
+      Review.destroy_all
+      get "/products/leer/#{@product.id}"
+      expect(assigns(:calification_mean)).to be_nil
+    end
+
+    it 'assigns @horarios correctly' do
+      @product.update(horarios: 'Lunes,10:00-12:00;Martes,14:00-16:00')
+      get "/products/leer/#{@product.id}"
+      expect(assigns(:horarios)).to eq([['Lunes', '10:00-12:00'], ['Martes', '14:00-16:00']])
+    end
+  end
+
+  describe 'GET /products/crear' do
+    it 'renders the new product form' do
+      get '/products/crear'
+      expect(response).to have_http_status(:success)
+    end
+  end
 
   describe 'POST /products/insertar' do
     let(:valid_attributes) { { nombre: 'NuevoProducto', precio: 5000, stock: 10, categories: 'Cancha' } }
     let(:invalid_attributes) { { nombre: '', precio: nil, stock: nil, categories: '' } }
 
-    # GOD
     context 'with valid parameters' do
       it 'creates a new Product' do
         expect {
@@ -40,7 +98,6 @@ RSpec.describe 'Products', type: :request do
       end
     end
 
-    # GOD
     context 'with invalid parameters' do
       it 'does not create a new Product' do
         expect {
@@ -51,14 +108,12 @@ RSpec.describe 'Products', type: :request do
       end
     end
 
-    
     context 'as a non-admin user' do
       before do
         sign_out @admin
         sign_in @user
       end
 
-      # GOD
       it 'does not allow creation of a product' do
         expect {
           post '/products/insertar', params: { product: valid_attributes }
@@ -86,7 +141,7 @@ RSpec.describe 'Products', type: :request do
         patch "/products/actualizar/#{@product.id}", params: { product: { nombre: '' } }
         @product.reload
         expect(@product.nombre).not_to eq('')
-        expect(flash[:error]).to match(/Hubo un error al guardar el producto./)
+        expect(flash[:error]).to match(/Hubo un error al guardar el producto. Complete todos los campos solicitados!/)
         expect(response).to redirect_to("/products/actualizar/#{@product.id}")
       end
     end
@@ -102,7 +157,7 @@ RSpec.describe 'Products', type: :request do
         @product.reload
         expect(@product.nombre).not_to eq('ProductoActualizado')
         expect(flash[:alert]).to match(/No estás autorizado para acceder a esta página/)
-        expect(response).to redirect_to('/')
+        expect(response).to redirect_to '/'
       end
     end
   end
@@ -116,19 +171,18 @@ RSpec.describe 'Products', type: :request do
         }.to change(Product, :count).by(-1)
         expect(response).to redirect_to('/products/index')
       end
-
     end
 
+    ## ESTE TEST NO TIENE SENTIDO DE QUE SE VAYA A ACTUALIZAR EL PRODUCTO
     context 'as a non-admin user' do
       before do
         sign_out @admin
         sign_in @user
+        @product_to_delete = Product.create!(nombre: 'ProductoAEliminar', precio: 5000, stock: 5, user_id: @admin.id, categories: 'Cancha')
       end
-
       it 'does not allow deletion of the product' do
-        product_to_delete = Product.create!(nombre: 'ProductoAEliminar', precio: 5000, stock: 5, user_id: @admin.id, categories: 'Cancha')
         expect {
-          delete "/products/eliminar/#{product_to_delete.id}"
+          delete "/products/eliminar/#{@product_to_delete.id}"
         }.to change(Product, :count).by(0)
         expect(flash[:alert]).to match(/No estás autorizado para acceder a esta página/)
         expect(response).to redirect_to('/')
@@ -178,56 +232,5 @@ RSpec.describe 'Products', type: :request do
         expect(response).to redirect_to("/products/leer/#{@product.id}")
       end
     end
-  end
-
-  describe 'GET #leer' do
-    @review = Review.create(tittle: 'Great Product', description: 'This is a great product', calification: 5, user: @user, product: @product)
-    @message = Message.new(body: 'Este es un mensaje de prueba', user: @admin, product: @product)
-
-    before do
-      allow(JokeApiService).to receive(:fetch_joke).and_return('This is a joke')
-      get "/products/leer/#{@product.id}"
-    end
-
-    it 'assigns @joke' do
-      expect(assigns(:joke)).to eq('This is a joke')
-    end
-
-    it 'assigns @product' do
-      expect(assigns(:product)).to eq(@product)
-    end
-
-    it 'assigns @messages' do
-      expect(assigns(:messages)).to match_array(@message)
-    end
-
-    it 'assigns @reviews' do
-      expect(assigns(:reviews)).to match_array(@review)
-    end
-
-    it 'calculates @calification' do
-      expect(assigns(:calification_mean)).to eq(5)
-    end
-
-    it 'allows nil calification' do
-      expect(assigns(:calification_mean)).to eq(nil)
-    end
-
-    it 'doesnt have horarios' do
-      expect(assigns(:horarios)).to be_nil
-    end
-
-    it 'assigns @horarios correctly' do
-      @product2 = Product.create!(nombre: 'Producto 2', precio: 4000, stock: 1, user_id: @admin.id, categories: 'Cancha', horarios: 'Lunes,10:00-12:00;Martes,14:00-16:00')
-      get "/products/leer/#{@product2.id}"
-      expect(assigns(:horarios)).to eq([['Lunes', '10:00-12:00'], ['Martes', '14:00-16:00']])
-    end
-
-    context 'when there are no reviews' do
-      it 'sets @calification_mean to nil' do
-        expect(assigns(:calification_mean)).to be_nil
-      end
-    end
-
   end
 end

@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe Message, type: :model do
     before(:each) do
-      @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
+      @user = User.create!(name: 'Juan', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
       @product = Product.create!(
         nombre: 'Producto de prueba',
         precio: 4000,

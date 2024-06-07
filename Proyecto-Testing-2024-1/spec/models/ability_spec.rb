@@ -7,13 +7,13 @@ RSpec.describe Ability, type: :model do
     let(:user) { nil }
 
     context 'when user is an admin' do
-      let(:user) { User.new(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin') }
+      let(:user) { User.new(name: 'Juan', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin') }
 
       it { should be_able_to(:manage, :all) }
     end
 
     context 'when user is present' do
-      let(:user) { User.new(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com') }
+      let(:user) { User.new(name: 'Juan', password: 'Nonono123!', email: 'asdf@gmail.com') }
       it { should_not be_able_to(:insert_deseado, user.products.build) }
       it { should_not be_able_to(:insertar, user.solicituds.build) }
 

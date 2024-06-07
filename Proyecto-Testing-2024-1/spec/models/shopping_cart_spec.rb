@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe ShoppingCart, type: :model do
   before(:each) do
-    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
+    @user = User.create!(name: 'Juan', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
     @product1 = Product.create!(nombre: 'Producto 1', precio: 1000, stock: 10, user: @user, categories: 'Cancha')
     @product2 = Product.create!(nombre: 'Producto 2', precio: 2000, stock: 20, user: @user, categories: 'Cancha')
     @shopping_cart = ShoppingCart.new(user: @user, products: { @product1.id => 2, @product2.id => 3 })
