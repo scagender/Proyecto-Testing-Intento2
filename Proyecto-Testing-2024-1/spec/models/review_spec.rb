@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Review, type: :model do
   before(:each) do
-    @user = User.create!(name: 'Juan', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
+    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
     @product = Product.create!(nombre: 'Producto 1', precio: 1000, stock: 10, user: @user, categories: 'Cancha')
     @review = Review.new(
-      tittle: 'Great Product',
-      description: 'This is a great product',
+      tittle: 'El mejor producto que prove en mi vida',
+      description: 'TIncreible producto, lo recomiendo mucho.',
       calification: 5,
       user: @user,
       product: @product
