@@ -87,8 +87,7 @@ RSpec.describe User, type: :model do
     describe "Methods" do
       it "has a valid password_required? method" do
         user = User.new(name: 'John1', email: 'asdf@gmail.com', role: 'admin')
-        # Test cases for password_required? method
-        expect(user.password_required?).to be true # or false based on your implementation
+        expect(user.password_required?).to be true
       end
     
       it "has a valid validate_password_strength method" do

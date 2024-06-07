@@ -86,9 +86,11 @@ RSpec.describe 'ShoppingCart', type: :request do
       expect(flash[:notice]).to eq('Producto eliminado del carro de compras')
     end
 
+    ## Argumentar
     it 'does not remove a non-existent product' do
-      delete "/carro/eliminar_producto/#{@product.id}", params: { product_id: 999 }
-      expect(flash[:alert]).to eq(nil) # no estoy seguro, hice calzar el test 
+      delete "/carro/eliminar_producto/#{@product.id}", params: {  }
+      expect(@shopping_cart.products).to eq({ @product.id.to_s => 1 })
+      expect(flash[:alert]).to eq(nil)
     end
   end
 
