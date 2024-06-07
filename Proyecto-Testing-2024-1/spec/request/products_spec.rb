@@ -4,6 +4,7 @@ RSpec.describe 'Products', type: :request do
   before do
     @admin = User.create!(name: 'Usuario Admin', password: 'Ejemplo123!', email: 'admin5@gmail.com', role: 'admin')
     @user = User.create!(name: 'Usuario Regular', password: 'Ejemplo123!', email: 'user3@gmail.com', role: 'user')
+    @user2 = User.new(name: 'Usuario Regular 2', password: 'Ejemplo123!', email: 'user9@gmail.com', role: 'user')
     sign_in @admin
     @product = Product.create!(nombre: 'Producto 1', precio: 4000, stock: 1, user_id: @admin.id, categories: 'Cancha')
   end
@@ -167,17 +168,66 @@ RSpec.describe 'Products', type: :request do
     context 'when the user cannot be saved' do
       before do
         allow_any_instance_of(User).to receive(:save).and_return(false)
-        @admin.update(deseados: ['1', '2'])
       end
 
       it 'does not add the product and shows an error message' do
         post "/products/insert_deseado/#{@product.id}"
 
-        @admin.reload
-        expect(@admin.deseados).to eq(['1', '2']) # The wishlist should remain unchanged
+        expect(@admin.reload.deseados).to eq([])
         expect(flash[:error]).to match(/Hubo un error al guardar los cambios:/)
         expect(response).to redirect_to("/products/leer/#{@product.id}")
       end
     end
+  end
+
+  describe 'GET #leer' do
+    @review = Review.create(tittle: 'Great Product', description: 'This is a great product', calification: 5, user: @user, product: @product)
+    @message = Message.new(body: 'Este es un mensaje de prueba', user: @admin, product: @product)
+
+    before do
+      allow(JokeApiService).to receive(:fetch_joke).and_return('This is a joke')
+      get "/products/leer/#{@product.id}"
+    end
+
+    it 'assigns @joke' do
+      expect(assigns(:joke)).to eq('This is a joke')
+    end
+
+    it 'assigns @product' do
+      expect(assigns(:product)).to eq(@product)
+    end
+
+    it 'assigns @messages' do
+      expect(assigns(:messages)).to match_array(@message)
+    end
+
+    it 'assigns @reviews' do
+      expect(assigns(:reviews)).to match_array(@review)
+    end
+
+    it 'calculates @calification' do
+      expect(assigns(:calification_mean)).to eq(5)
+    end
+
+    it 'allows nil calification' do
+      expect(assigns(:calification_mean)).to eq(nil)
+    end
+
+    it 'doesnt have horarios' do
+      expect(assigns(:horarios)).to be_nil
+    end
+
+    it 'assigns @horarios correctly' do
+      @product2 = Product.create!(nombre: 'Producto 2', precio: 4000, stock: 1, user_id: @admin.id, categories: 'Cancha', horarios: 'Lunes,10:00-12:00;Martes,14:00-16:00')
+      get "/products/leer/#{@product2.id}"
+      expect(assigns(:horarios)).to eq([['Lunes', '10:00-12:00'], ['Martes', '14:00-16:00']])
+    end
+
+    context 'when there are no reviews' do
+      it 'sets @calification_mean to nil' do
+        expect(assigns(:calification_mean)).to be_nil
+      end
+    end
+
   end
 end
