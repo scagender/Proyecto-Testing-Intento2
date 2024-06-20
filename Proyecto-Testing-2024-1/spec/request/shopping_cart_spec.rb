@@ -281,5 +281,12 @@ RSpec.describe 'ShoppingCart', type: :request do
       expect(response).to redirect_to('/carro')
       expect(flash[:alert]).to eq('Hubo un error al limpiar el carro de compras. Contacte un administrador.')
     end
+    it 'creates a new shopping cart and clears it' do
+      delete '/carro/limpiar'
+      expect(assigns(:shopping_cart)).to be_present
+      expect(assigns(:shopping_cart).products).to be_empty
+      expect(flash[:notice]).to eq('Carro de compras limpiado exitosamente')
+      expect(response).to redirect_to('/carro')
+    end
   end
 end
