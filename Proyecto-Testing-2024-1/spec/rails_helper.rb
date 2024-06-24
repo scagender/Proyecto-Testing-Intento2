@@ -1,4 +1,6 @@
 require 'simplecov'
+require 'capybara/rspec'
+
 SimpleCov.start do
   add_group 'Controllers', 'app/request'
   add_group 'Models', 'app/models'
