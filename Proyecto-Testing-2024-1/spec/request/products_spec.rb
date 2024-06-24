@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe 'Products', type: :request do
   before do
-    @admin = User.create!(name: 'Usuario Admin', password: 'Ejemplo123!', email: 'admin5@gmail.com', role: 'admin')
-    @user = User.create!(name: 'Usuario Regular', password: 'Ejemplo123!', email: 'user3@gmail.com', role: 'user')
+    @admin = User.create!(name: 'Usuario Admin', password: 'Ejemplo123!', email: 'admin10@gmail.com', role: 'admin')
+    @user = User.create!(name: 'Usuario Regular', password: 'Ejemplo123!', email: 'user10@gmail.com', role: 'user')
     sign_in @admin
     @product = Product.create!(nombre: 'Producto 1', precio: 4000, stock: 1, user_id: @admin.id, categories: 'Cancha')
   end
@@ -34,7 +34,22 @@ RSpec.describe 'Products', type: :request do
       get '/products/index', params: { search: 'Producto' }
       expect(assigns(:products)).to include(@product)
     end
+    it 'filters products by category and search term' do
+      get '/products/index', params: { category: 'Cancha', search: 'Producto' }
+      expect(assigns(:products)).to include(@product)
+    end
+  
+    it 'filters products by category only' do
+      get '/products/index', params: { category: 'Cancha' }
+      expect(assigns(:products)).to include(@product)
+    end
+  
+    it 'filters products by search term only' do
+      get '/products/index', params: { search: 'Producto' }
+      expect(assigns(:products)).to include(@product)
+    end
   end
+
 
   describe 'GET /products/leer/:id' do
     before do

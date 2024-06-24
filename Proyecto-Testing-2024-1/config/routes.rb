@@ -62,4 +62,6 @@ Rails.application.routes.draw do
   delete 'carro/eliminar_producto/:product_id', to: 'shopping_cart#eliminar_producto' # Eliminar un producto del carro
   delete 'carro/limpiar', to: 'shopping_cart#limpiar' # Ruta para eliminar todos los productos del carro de compras
   post 'carro/realizar_compra', to: 'shopping_cart#realizar_compra' # Ruta para comprar de los productos del carro
+
+  # mount CypressOnRails::Engine => '/cypress' if Rails.env.test7
 end
