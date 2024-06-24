@@ -4,8 +4,8 @@ require 'rails_helper'
 RSpec.describe 'Products', type: :system do
   before do
     driven_by(:selenium_chrome_headless)
-    @admin = User.create!(email: 'admin@example.com', password: 'password', role: 'admin')
-    @user = User.create!(email: 'user@example.com', password: 'password', role: 'user')
+    @admin = User.create!(name: 'Juan Gomez', email: 'admin@example.com', password: 'password', role: 'admin')
+    @user = User.create!(name: 'Jose Gonzales', email: 'user@example.com', password: 'password', role: 'user')
   end
 
   it 'allows admin to create a product' do

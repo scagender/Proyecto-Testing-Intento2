@@ -1,4 +1,3 @@
-# spec/system/products_spec.rb
 require 'rails_helper'
 
 RSpec.describe 'Products', type: :system do
@@ -8,27 +7,34 @@ RSpec.describe 'Products', type: :system do
 
   # Simular inicio de sesión como un usuario administrador
   def login_as_admin
-    user = User.create!(name: 'Admin', email: 'admin@example.com', password: 'password', role: 'admin')
-    visit new_user_session_path
-    fill_in 'Email', with: user.email
-    fill_in 'Password', with: user.password
+    @admin = User.create!(name: 'Admin', email: 'admin53@example.com', password: 'password', role: 'admin')
+    visit '/login'
+    fill_in 'Email', with: @admin.email
+    fill_in 'Password', with: @admin.password
     click_button 'Log in'
   end
 
   # Simular inicio de sesión como un usuario regular
   def login_as_user
-    user = User.create!(name: 'User', email: 'user@example.com', password: 'password', role: 'user')
-    visit new_user_session_path
-    fill_in 'Email', with: user.email
-    fill_in 'Password', with: user.password
+    @user = User.create!(name: 'User', email: 'user24@example.com', password: 'password', role: 'user')
+    visit '/login'
+    fill_in 'Email', with: @user.email
+    fill_in 'Password', with: @user.password
     click_button 'Log in'
   end
 
-  it 'lists all products' do
-    user = User.create!(name: 'User', email: 'user@example.com', password: 'password', role: 'user')
-    Product.create!(nombre: 'Producto 1', precio: 100, stock: 10, categories: 'Cancha', user: user)
-    Product.create!(nombre: 'Producto 2', precio: 200, stock: 5, categories: 'Cancha', user: user)
+  before(:each) do
+    @user = User.create!(name: 'User', email: 'user@example.com', password: 'password', role: 'user')
+    @product1 = Product.create!(nombre: 'Producto 1', precio: 100, stock: 10, categories: 'Cancha', user: @user)
+    @product2 = Product.create!(nombre: 'Producto 2', precio: 200, stock: 5, categories: 'Cancha', user: @user)
+  end
 
+  after(:each) do
+    User.destroy_all
+    Product.destroy_all
+  end
+
+  it 'lists all products' do
     visit '/products/index'
 
     expect(page).to have_content('Producto 1')
@@ -36,10 +42,6 @@ RSpec.describe 'Products', type: :system do
   end
 
   it 'searches products by category and name' do
-    user = User.create!(name: 'User', email: 'user@example.com', password: 'password', role: 'user')
-    Product.create!(nombre: 'Producto 1', precio: 100, stock: 10, categories: 'Cancha', user: user)
-    Product.create!(nombre: 'Producto 2', precio: 200, stock: 5, categories: 'Campo', user: user)
-
     visit '/products/index'
     fill_in 'search', with: 'Producto 1'
     select 'Cancha', from: 'category'
@@ -67,8 +69,7 @@ RSpec.describe 'Products', type: :system do
   it 'updates a product as admin' do
     login_as_admin
 
-    user = User.find_by(email: 'admin@example.com')
-    product = Product.create!(nombre: 'Producto Actualizado', precio: 250, stock: 8, categories: 'Cancha', user: user)
+    product = Product.create!(nombre: 'Producto Actualizado', precio: 250, stock: 8, categories: 'Cancha', user: @admin)
 
     visit "/products/actualizar/#{product.id}"
 
@@ -84,8 +85,7 @@ RSpec.describe 'Products', type: :system do
   it 'deletes a product as admin' do
     login_as_admin
 
-    user = User.find_by(email: 'admin@example.com')
-    product = Product.create!(nombre: 'Producto a Eliminar', precio: 350, stock: 12, categories: 'Cancha', user: user)
+    product = Product.create!(nombre: 'Producto a Eliminar', precio: 350, stock: 12, categories: 'Cancha', user: @admin)
 
     visit "/products/leer/#{product.id}"
     click_button 'Eliminar Producto'
@@ -97,22 +97,20 @@ RSpec.describe 'Products', type: :system do
   it 'adds a product to the wishlist' do
     login_as_user
 
-    user = User.find_by(email: 'user@example.com')
-    product = Product.create!(nombre: 'Producto Deseado', precio: 300, stock: 15, categories: 'Cancha', user: user)
+    product = Product.create!(nombre: 'Producto Deseado', precio: 300, stock: 15, categories: 'Cancha', user: @user)
 
     visit "/products/leer/#{product.id}"
     click_button 'Agregar a lista de deseados'
 
     expect(page).to have_content('Producto agregado a la lista de deseados')
-    user.reload
-    expect(user.deseados).to include(product.id.to_s)
+    @user.reload
+    expect(@user.deseados).to include(product.id.to_s)
   end
 
   it 'reads product details' do
-    user = User.create!(name: 'User', email: 'user@example.com', password: 'password', role: 'user')
-    product = Product.create!(nombre: 'Producto Detalle', precio: 400, stock: 20, categories: 'Cancha', user: user)
-    review1 = product.reviews.create!(calification: 4, comment: 'Buen producto', user: user)
-    review2 = product.reviews.create!(calification: 5, comment: 'Excelente producto', user: user)
+    product = Product.create!(nombre: 'Producto Detalle', precio: 400, stock: 20, categories: 'Cancha', user: @user)
+    review1 = product.reviews.create!(tittle: 'review1', calification: 4, description: 'Buen producto', user: @user)
+    review2 = product.reviews.create!(tittle: 'review2', calification: 5, description: 'Excelente producto', user: @user)
 
     visit "/products/leer/#{product.id}"
 
