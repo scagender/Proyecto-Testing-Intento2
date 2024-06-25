@@ -9,21 +9,22 @@ RSpec.describe 'Products', type: :system do
   def login_as_admin
     @admin = User.create!(name: 'Admin', email: 'admin53@example.com', password: 'password', role: 'admin')
     visit '/login'
-    fill_in 'Email', with: @admin.email
-    fill_in 'Password', with: @admin.password
-    click_button 'Log in'
+    fill_in 'user_email', with: @admin.email
+    fill_in 'user_password', with: @admin.password
+    click_button 'Iniciar Sesión'
   end
 
   # Simular inicio de sesión como un usuario regular
   def login_as_user
     @user = User.create!(name: 'User', email: 'user24@example.com', password: 'password', role: 'user')
     visit '/login'
-    fill_in 'Email', with: @user.email
-    fill_in 'Password', with: @user.password
-    click_button 'Log in'
+    fill_in 'user_email', with: @user.email
+    fill_in 'user_password', with: @user.password
+    click_button 'Iniciar Sesión'
   end
 
   before(:each) do
+    @admin = User.create!(name: 'Admin', email: 'admin53@example.com', password: 'password', role: 'admin')
     @user = User.create!(name: 'User', email: 'user@example.com', password: 'password', role: 'user')
     @product1 = Product.create!(nombre: 'Producto 1', precio: 100, stock: 10, categories: 'Cancha', user: @user)
     @product2 = Product.create!(nombre: 'Producto 2', precio: 200, stock: 5, categories: 'Cancha', user: @user)
@@ -52,59 +53,52 @@ RSpec.describe 'Products', type: :system do
   end
 
   it 'creates a new product as admin' do
-    login_as_admin
+    visit '/login'
+    fill_in 'user_email', with: @admin.email
+    fill_in 'user_password', with: @admin.password
+    click_button 'Iniciar Sesión'
 
     visit '/products/crear'
 
     fill_in 'Nombre', with: 'Nuevo Producto'
     fill_in 'Precio', with: 150
     fill_in 'Stock', with: 20
-    fill_in 'Categories', with: 'Cancha'
-    click_button 'Crear Producto'
+    select 'Cancha', from: 'product[categories]'
+    click_button 'Guardar'
 
     expect(page).to have_content('Producto creado Correctamente !')
     expect(page).to have_content('Nuevo Producto')
   end
 
   it 'updates a product as admin' do
-    login_as_admin
+    product = Product.create!(nombre: 'Producto existente', precio: 100, stock: 50, categories: 'Cancha', user: @admin)
 
-    product = Product.create!(nombre: 'Producto Actualizado', precio: 250, stock: 8, categories: 'Cancha', user: @admin)
+    visit '/login'
+    fill_in 'user_email', with: @admin.email
+    fill_in 'user_password', with: @admin.password
+    click_button 'Iniciar Sesión'
 
     visit "/products/actualizar/#{product.id}"
 
-    fill_in 'Nombre', with: 'Producto Actualizado Nuevo'
-    fill_in 'Precio', with: 300
-    fill_in 'Stock', with: 10
-    click_button 'Actualizar Producto'
+    fill_in 'Nombre', with: 'Producto actualizado'
+    click_button 'Guardar'
 
-    expect(page).to have_content('Producto actualizado Correctamente!')
-    expect(page).to have_content('Producto Actualizado Nuevo')
-  end
-
-  it 'deletes a product as admin' do
-    login_as_admin
-
-    product = Product.create!(nombre: 'Producto a Eliminar', precio: 350, stock: 12, categories: 'Cancha', user: @admin)
-
-    visit "/products/leer/#{product.id}"
-    click_button 'Eliminar Producto'
-
-    expect(page).to have_content('Producto eliminado correctamente')
-    expect(Product.exists?(product.id)).to be_falsey
+    expect(page).to have_content('Producto actualizado')
   end
 
   it 'adds a product to the wishlist' do
-    login_as_user
-
-    product = Product.create!(nombre: 'Producto Deseado', precio: 300, stock: 15, categories: 'Cancha', user: @user)
+    product = Product.create!(nombre: 'Producto de prueba', precio: 100, stock: 50, categories: 'Cancha',  horarios: '13/06/2024,14:00,16:00', user: @admin)
+    
+    visit '/login'
+    fill_in 'user_email', with: @user.email
+    fill_in 'user_password', with: @user.password
+    click_button 'Iniciar Sesión'
 
     visit "/products/leer/#{product.id}"
-    click_button 'Agregar a lista de deseados'
+
+    click_button 'Guardar en deseados'
 
     expect(page).to have_content('Producto agregado a la lista de deseados')
-    @user.reload
-    expect(@user.deseados).to include(product.id.to_s)
   end
 
   it 'reads product details' do

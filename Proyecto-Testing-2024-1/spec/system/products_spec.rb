@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Products', type: :system do
   before do
-    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com',
-                         role: 'admin')
+    @user = User.create!(name: 'John1', password: 'Nonono123!', email: 'asdf@gmail.com', role: 'admin')
     login_as(@user, scope: :user)
   end
   describe 'visiting the product form' do
