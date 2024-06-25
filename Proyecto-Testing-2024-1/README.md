@@ -16,3 +16,26 @@ No detallo todos, ya que no se si serán relevantes en nuestra nota y realmente 
 Nada fue modificado.
 
 CI no fue logrado completamente.
+
+
+
+
+Para arreglar el error de la primera parte del enunciado se modifico la página leer.html.erb de la carpeta views de products. El input libre que permitía seleccionar cualquier fecha fue cambiado por un select que solamente muestra las fechas disponibles de la reserva. Este es el nuevo código:
+<div class="control">
+    <select class="input" name="solicitud[reservation_datetime]" required>
+
+        <% @horarios.each do |horario| %>
+            <% fecha_hora_str = "#{horario[0]} #{horario[1]}"  %>
+            <% fecha_hora = DateTime.strptime(fecha_hora_str, "%d/%m/%Y %H:%M") %>
+            <% fecha_hora_termino_str = "#{horario[2]}"  %>
+            <% fecha_hora_termino = DateTime.strptime(fecha_hora_termino_str, "%H:%M") %>
+
+            <% # Formato de fecha y hora: dd/mm HH:MM - HH:MM %>
+            <option value="<%= "#{fecha_hora}" %>">
+                <%= "#{fecha_hora.strftime("%d/%m")} | Horario: #{fecha_hora.strftime("%H:%M")} - #{fecha_hora_termino.strftime("%H:%M")}" %>
+            </option>
+        <% end %>
+    </select>
+</div>
+
+La información se sigue mandando en el mismo formato que antes, por lo que nada más tuvo que ser modificado para que la página funcionara.
