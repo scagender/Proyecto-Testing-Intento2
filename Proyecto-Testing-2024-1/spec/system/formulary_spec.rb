@@ -8,6 +8,7 @@ RSpec.describe 'Products', type: :system do
     @user = User.create!(name: 'Jose Gonzales', email: 'user@example.com', password: 'password', role: 'user')
   end
   # Products
+  # Happy Path
   it 'allows admin to create a product' do
     visit '/login'
     fill_in 'user_email', with: @admin.email
@@ -27,7 +28,43 @@ RSpec.describe 'Products', type: :system do
     expect(page).to have_content('Producto creado Correctamente !')
     expect(page).to have_content('Producto de prueba')
   end
+  # Alternative Path 1
+  it 'allows admin to create a product with error stock' do
+    visit '/login'
+    fill_in 'user_email', with: @admin.email
+    fill_in 'user_password', with: @admin.password
+    click_button 'Iniciar Sesión'
 
+    visit '/products/crear'
+
+    fill_in 'Nombre', with: 'Producto de prueba'
+    fill_in 'Precio', with: 100
+    fill_in 'Stock', with: 'veinte'
+    select 'Equipamiento', from: 'product[categories]'
+
+    click_button 'Guardar'
+
+    expect(page).to have_content("Hubo un error al guardar el producto: Stock: no es un número")
+  end
+  # Alternative Path 2
+  it 'allows admin to create a product with error precio' do
+    visit '/login'
+    fill_in 'user_email', with: @admin.email
+    fill_in 'user_password', with: @admin.password
+    click_button 'Iniciar Sesión'
+
+    visit '/products/crear'
+
+    fill_in 'Nombre', with: 'Producto de prueba'
+    fill_in 'Precio', with: 'cincuenta'
+    fill_in 'Stock', with: 100
+    select 'Equipamiento', from: 'product[categories]'
+
+    click_button 'Guardar'
+
+    expect(page).to have_content("Hubo un error al guardar el producto: Precio: no es un número")
+  end
+  # Alternative Path 3
   it 'prevents non-admin from creating a product' do
     visit '/login'
     fill_in 'user_email', with: @user.email
@@ -37,6 +74,7 @@ RSpec.describe 'Products', type: :system do
 
     expect(page).to have_content('Esta página es exclusiva para administradores.')
   end
+  # Test extras
 
   it 'allows admin to update a product' do
     product = Product.create!(nombre: 'Producto existente', precio: 100, stock: 50, categories: 'Cancha', user: @admin)
@@ -53,7 +91,6 @@ RSpec.describe 'Products', type: :system do
 
     expect(page).to have_content('Producto actualizado')
   end
-
   it 'prevents non-admin from updating a product' do
     product = Product.create!(nombre: 'Producto existente', precio: 100, stock: 50, categories: 'Cancha', user: @admin)
     
@@ -153,6 +190,7 @@ RSpec.describe 'Products', type: :system do
     expect(page).not_to have_content('Producto C')
   end
   # Edit User
+  # Happy Path
   it 'edit user without change password' do
     user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
     visit '/login'
@@ -170,6 +208,7 @@ RSpec.describe 'Products', type: :system do
 
     expect(page).to have_content('Tu cuenta se ha actualizado exitosamente.')
   end
+  # Happy Path 2
   it 'edit user with change password' do
     user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
     visit '/login'
@@ -189,6 +228,7 @@ RSpec.describe 'Products', type: :system do
 
     expect(page).to have_content('Tu cuenta se ha actualizado exitosamente.')
   end
+  # Alternative Path 1
   it 'edit user with password short' do
     user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
     visit '/login'
@@ -209,6 +249,7 @@ RSpec.describe 'Products', type: :system do
     expect(page).to have_content('Un error impidió que fuera guardado:')
     expect(page).to have_content('Password: es demasiado corto (6 caracteres mínimo)')
   end
+  # Alternative Path 2
   it 'edit user without same password' do
     user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
     visit '/login'
@@ -229,7 +270,7 @@ RSpec.describe 'Products', type: :system do
     expect(page).to have_content('Un error impidió que fuera guardado:')
     expect(page).to have_content('Password confirmation: no coincide')
   end
-
+  # Alternative Path 3
   it 'edit user without current password' do
     user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
     visit '/login'
@@ -251,7 +292,7 @@ RSpec.describe 'Products', type: :system do
 end
 
 =begin
-# TEST EXTRAS CREADOS 
+# TEST DE FORMULARIOS CREADOS 
 
 # NO FUNCIONALES
 # Review
