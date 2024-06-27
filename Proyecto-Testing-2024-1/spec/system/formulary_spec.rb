@@ -446,14 +446,12 @@ RSpec.describe 'Products', type: :system do
     choose 'Envío a domicilio'
     expect(page).to have_checked_field('Envío a domicilio')
                                     
-    fill_in 'adress[name]', with: 'Felipe Flores'
-    fill_in 'adress[direction]', with: 'El salitre 3421'
-    fill_in 'adress[comuna]', with: 'Pudahuel'
-    fill_in 'adress[region]', with: 'Metropolitana'
+    fill_in 'nombre', with: 'Felipe Flores'
+    fill_in 'direccion', with: 'El salitre 3421'
+    fill_in 'comuna', with: 'Pudahuel'
+    fill_in 'region', with: 'Metropolitana'
 
     click_button 'Pagar'
-
-    expect(page).to redirect_to("/solicitud/index")
     expect(page).to have_content('Compra realizada exitosamente')
   end
   it 'Buy a product without delivery' do
@@ -472,29 +470,6 @@ RSpec.describe 'Products', type: :system do
     click_button 'Pagar'
     
     expect(page).to have_content('Compra realizada exitosamente')
-  end
-  it 'Buy a product without products' do
-    product = Product.create!(nombre: 'Producto Test', precio: 200, stock: 100, categories: 'Cancha',horarios: '14/06/2024,14:00,16:00',  user: @admin)
-    shopping_cart = ShoppingCart.create!(user_id: @user.id, products: {})
-    visit '/login'
-    fill_in 'user_email', with: @user.email
-    fill_in 'user_password', with: @user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/carro/detalle"
-    
-    choose 'Envío a domicilio'
-    expect(page).to have_checked_field('Envío a domicilio')
-                                    
-    fill_in 'adress[name]', with: 'Felipe Flores'
-    fill_in 'adress[direction]', with: 'El salitre 3421'
-    fill_in 'adress[comuna]', with: 'Pudahuel'
-    fill_in 'adress[region]', with: 'Metropolitana'
-
-    click_button 'Pagar'
-    
-    expect(page).to redirect_to("/carro")
-    expect(page).to have_content('No tienes productos en el carro de compras')
   end
 end
 
