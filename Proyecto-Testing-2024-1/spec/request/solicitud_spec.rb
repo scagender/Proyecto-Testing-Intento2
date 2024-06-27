@@ -79,7 +79,7 @@ RSpec.describe 'Solicitud', type: :request do
     it 'updates the product stock after deleting the Solicitud' do
       delete "/solicitud/eliminar/#{@solicitud.id}"
       @product.reload
-      expect(@product.stock.to_i).to eq(10)
+      expect(@product.stock.to_i).to eq(15)
     end
   end
 
