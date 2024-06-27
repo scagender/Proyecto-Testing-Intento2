@@ -152,7 +152,109 @@ RSpec.describe 'Products', type: :system do
     expect(page).not_to have_content('Producto B')
     expect(page).not_to have_content('Producto C')
   end
-  # Review
+  # Edit User
+  it 'edit user without change password' do
+    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
+    visit '/login'
+    fill_in 'user_email', with: user.email
+    fill_in 'user_password', with: user.password
+    click_button 'Iniciar Sesión'
+
+    visit "/edit"
+                                    
+    fill_in 'user[name]', with: 'Felipe Flores'
+    fill_in 'user[email]', with: 'elgoleador@gmail.com'
+    fill_in 'user[current_password]', with: 'password'
+
+    click_button 'commit'
+
+    expect(page).to have_content('Tu cuenta se ha actualizado exitosamente.')
+  end
+  it 'edit user with change password' do
+    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
+    visit '/login'
+    fill_in 'user_email', with: user.email
+    fill_in 'user_password', with: user.password
+    click_button 'Iniciar Sesión'
+
+    visit "/edit"
+                                    
+    fill_in 'user[name]', with: 'Felipe Flores'
+    fill_in 'user[email]', with: 'elgoleador@gmail.com'
+    fill_in 'user[password]', with: 'password123'
+    fill_in 'user[password_confirmation]', with: 'password123'
+    fill_in 'user[current_password]', with: 'password'
+
+    click_button 'commit'
+
+    expect(page).to have_content('Tu cuenta se ha actualizado exitosamente.')
+  end
+  it 'edit user with password short' do
+    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
+    visit '/login'
+    fill_in 'user_email', with: user.email
+    fill_in 'user_password', with: user.password
+    click_button 'Iniciar Sesión'
+
+    visit "/edit"
+                                    
+    fill_in 'user[name]', with: 'Felipe Flores'
+    fill_in 'user[email]', with: 'elgoleador@gmail.com'
+    fill_in 'user[password]', with: 'p123'
+    fill_in 'user[password_confirmation]', with: 'p123'
+    fill_in 'user[current_password]', with: 'password'
+
+    click_button 'commit'
+
+    expect(page).to have_content('Un error impidió que fuera guardado:')
+    expect(page).to have_content('Password: es demasiado corto (6 caracteres mínimo)')
+  end
+  it 'edit user without same password' do
+    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
+    visit '/login'
+    fill_in 'user_email', with: user.email
+    fill_in 'user_password', with: user.password
+    click_button 'Iniciar Sesión'
+
+    visit "/edit"
+                                    
+    fill_in 'user[name]', with: 'Felipe Flores'
+    fill_in 'user[email]', with: 'elgoleador@gmail.com'
+    fill_in 'user[password]', with: 'pass21341'
+    fill_in 'user[password_confirmation]', with: 'pass3789193'
+    fill_in 'user[current_password]', with: 'password'
+
+    click_button 'commit'
+
+    expect(page).to have_content('Un error impidió que fuera guardado:')
+    expect(page).to have_content('Password confirmation: no coincide')
+  end
+
+  it 'edit user without current password' do
+    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
+    visit '/login'
+    fill_in 'user_email', with: user.email
+    fill_in 'user_password', with: user.password
+    click_button 'Iniciar Sesión'
+
+    visit "/edit"
+                                    
+    fill_in 'user[name]', with: 'Felipe Flores'
+    fill_in 'user[email]', with: 'elgoleador@gmail.com'
+    fill_in 'user[current_password]', with: ''
+
+    click_button 'commit'
+
+    expect(page).to have_content('Un error impidió que fuera guardado:')
+    expect(page).to have_content('Current password: no puede estar en blanco')
+  end
+end
+
+=begin
+# TEST EXTRAS CREADOS 
+
+# NO FUNCIONALES
+# Review
   it 'creates a new review' do
     product = Product.create!(nombre: 'Producto Test', precio: 200, stock: 100, categories: 'Cancha',horarios: '14/06/2024,14:00,16:00',  user: @admin)
     visit '/login'
@@ -316,123 +418,9 @@ RSpec.describe 'Products', type: :system do
 
     expect(page).not_to have_content('¿A cuanto el por mayor?')
   end
-  # Contact Message
 
-  it 'Create a contact message' do
-    product = Product.create!(nombre: 'Producto Test', precio: 200, stock: 100, categories: 'Cancha',horarios: '14/06/2024,14:00,16:00',  user: @admin)
-    visit '/login'
-    fill_in 'user_email', with: @user.email
-    fill_in 'user_password', with: @user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/contacto"
-
-    fill_in 'contact[name]', with: 'Esteban Paredes'
-    fill_in 'contact[mail]', with: 'lomejordecolocolo@gmail.com'
-    fill_in 'contact[title]', with: '¿Funcionara la aplicacion bien algun dia?'
-    fill_in 'contact[body]', with: 'No me funcionan los apartados de comprar y de solicitudes, avisenme cuando los arreglen'
-
-    click_button 'Enviar'
-    
-    expect(page).to have_content('Mensaje de contacto enviado correctamente')
-  end
-  # User
-  it 'edit user without change password' do
-    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
-    visit '/login'
-    fill_in 'user_email', with: user.email
-    fill_in 'user_password', with: user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/edit"
-                                    
-    fill_in 'user[name]', with: 'Felipe Flores'
-    fill_in 'user[email]', with: 'elgoleador@gmail.com'
-    fill_in 'user[current_password]', with: 'password'
-
-    click_button 'commit'
-
-    expect(page).to have_content('Tu cuenta se ha actualizado exitosamente.')
-  end
-  it 'edit user with change password' do
-    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
-    visit '/login'
-    fill_in 'user_email', with: user.email
-    fill_in 'user_password', with: user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/edit"
-                                    
-    fill_in 'user[name]', with: 'Felipe Flores'
-    fill_in 'user[email]', with: 'elgoleador@gmail.com'
-    fill_in 'user[password]', with: 'password123'
-    fill_in 'user[password_confirmation]', with: 'password123'
-    fill_in 'user[current_password]', with: 'password'
-
-    click_button 'commit'
-
-    expect(page).to have_content('Tu cuenta se ha actualizado exitosamente.')
-  end
-  it 'edit user with password short' do
-    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
-    visit '/login'
-    fill_in 'user_email', with: user.email
-    fill_in 'user_password', with: user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/edit"
-                                    
-    fill_in 'user[name]', with: 'Felipe Flores'
-    fill_in 'user[email]', with: 'elgoleador@gmail.com'
-    fill_in 'user[password]', with: 'p123'
-    fill_in 'user[password_confirmation]', with: 'p123'
-    fill_in 'user[current_password]', with: 'password'
-
-    click_button 'commit'
-
-    expect(page).to have_content('Un error impidió que fuera guardado:')
-    expect(page).to have_content('Password: es demasiado corto (6 caracteres mínimo)')
-  end
-  it 'edit user without same password' do
-    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
-    visit '/login'
-    fill_in 'user_email', with: user.email
-    fill_in 'user_password', with: user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/edit"
-                                    
-    fill_in 'user[name]', with: 'Felipe Flores'
-    fill_in 'user[email]', with: 'elgoleador@gmail.com'
-    fill_in 'user[password]', with: 'pass21341'
-    fill_in 'user[password_confirmation]', with: 'pass3789193'
-    fill_in 'user[current_password]', with: 'password'
-
-    click_button 'commit'
-
-    expect(page).to have_content('Un error impidió que fuera guardado:')
-    expect(page).to have_content('Password confirmation: no coincide')
-  end
-
-  it 'edit user without current password' do
-    user =  User.create!(name: 'Alexis Sanchez', email: 'asanchez@example.com', password: 'password', role: 'user')
-    visit '/login'
-    fill_in 'user_email', with: user.email
-    fill_in 'user_password', with: user.password
-    click_button 'Iniciar Sesión'
-
-    visit "/edit"
-                                    
-    fill_in 'user[name]', with: 'Felipe Flores'
-    fill_in 'user[email]', with: 'elgoleador@gmail.com'
-    fill_in 'user[current_password]', with: ''
-
-    click_button 'commit'
-
-    expect(page).to have_content('Un error impidió que fuera guardado:')
-    expect(page).to have_content('Current password: no puede estar en blanco')
-  end
-  # Shopping Car
+  #FUNCIONALES
+    # Shopping Car
   it 'Buy a product with delivery' do
     product = Product.create!(nombre: 'Producto Test', precio: 200, stock: 100, categories: 'Cancha',horarios: '14/06/2024,14:00,16:00',  user: @admin)
     shopping_cart = ShoppingCart.create!(user_id: @user.id, products: { product.id.to_s => 1 })
@@ -471,5 +459,24 @@ RSpec.describe 'Products', type: :system do
     
     expect(page).to have_content('Compra realizada exitosamente')
   end
-end
+    # Contact Message
 
+  it 'Create a contact message' do
+    product = Product.create!(nombre: 'Producto Test', precio: 200, stock: 100, categories: 'Cancha',horarios: '14/06/2024,14:00,16:00',  user: @admin)
+    visit '/login'
+    fill_in 'user_email', with: @user.email
+    fill_in 'user_password', with: @user.password
+    click_button 'Iniciar Sesión'
+
+    visit "/contacto"
+
+    fill_in 'contact[name]', with: 'Esteban Paredes'
+    fill_in 'contact[mail]', with: 'lomejordecolocolo@gmail.com'
+    fill_in 'contact[title]', with: '¿Funcionara la aplicacion bien algun dia?'
+    fill_in 'contact[body]', with: 'No me funcionan los apartados de comprar y de solicitudes, avisenme cuando los arreglen'
+
+    click_button 'Enviar'
+    
+    expect(page).to have_content('Mensaje de contacto enviado correctamente')
+  end
+=end

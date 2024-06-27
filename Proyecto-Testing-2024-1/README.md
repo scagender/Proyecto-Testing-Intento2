@@ -1,8 +1,8 @@
-## Tarea X
+## Tarea 3
 
 ### Logros de la entrega:
 [Recuerden especificar quien hizo cada cosa]
-* Eduardo Cáceres y Juan Pablo Vera trabajaron juntos en todo lo que habia que hacer, pero Eduardo se concentró principalmente en lograr los test de integración y juan pablo en lograr los tests unitarios y el CI.
+* Eduardo Cáceres y Juan Pablo Vera trabajaron juntos en todo lo que habia que hacer, pero Eduardo se concentró principalmente en lograr los test de formularios y Juan Pablo en lograr los tests de navegación y encontrar el error descrito por el enunciado.
 * Se pudo hacer gran parte del coverage de test unitarios y de integración. Se obtuvo alto porcentaje de coverage 97.89%.
 * El CI está logrado a medias, todo funciona excepto el chrome headless, por lo que preferimos enfocarnos en otras cosas de la tarea.
 
