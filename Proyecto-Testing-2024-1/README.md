@@ -38,7 +38,8 @@ Para arreglar el error de la primera parte del enunciado se modifico la página 
     </select>
 </div>
 
-La información se sigue mandando en el mismo formato que antes, por lo que nada más tuvo que ser modificado para que la página funcionara. Desde ahora los horarios deben tener formato: dia/mes/año,HH,MM;
+La información se sigue mandando en el mismo formato que antes, por lo que nada más tuvo que ser modificado para que la página funcionara. Desde ahora los horarios deben tener formato: dia/mes/año,HH,MM; 
+El formato anterior fue agregada al texto a la hora de crear un producto.
 
 ### Tests capybara de navegación
 
